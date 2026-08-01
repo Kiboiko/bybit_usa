@@ -67,8 +67,8 @@
     reveals.forEach((el) => el.classList.add("is-visible"));
   }
 
-  /* Lead forms → Google Sheets via Apps Script */
-  const scriptUrl = (window.APP_CONFIG && window.APP_CONFIG.googleScriptUrl || "").trim();
+  /* Lead forms → Google Sheets via backend + service account */
+  const apiUrl = (window.APP_CONFIG && window.APP_CONFIG.apiUrl) || "/api/leads";
 
   const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
@@ -112,27 +112,21 @@
       return;
     }
 
-    if (!scriptUrl) {
-      setMsg(
-        msg,
-        "Form is ready. Add your Google Apps Script URL in js/config.js",
-        "is-error"
-      );
-      console.warn("[lead-form] Missing APP_CONFIG.googleScriptUrl");
-      return;
-    }
-
     btn.disabled = true;
     setMsg(msg, "Sending…", null);
 
     try {
-      // text/plain avoids a CORS preflight with Apps Script web apps
-      await fetch(scriptUrl, {
+      const res = await fetch(apiUrl, {
         method: "POST",
-        mode: "no-cors",
-        headers: { "Content-Type": "text/plain;charset=utf-8" },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),
       });
+
+      const payload = await res.json().catch(() => ({}));
+
+      if (!res.ok || !payload.ok) {
+        throw new Error(payload.error || `HTTP ${res.status}`);
+      }
 
       form.reset();
       setMsg(msg, "Thank you! Your request has been sent.", "is-success");
