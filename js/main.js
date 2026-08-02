@@ -72,6 +72,52 @@
 
   const isValidEmail = (value) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
+  const isValidUSPhone = (value) => {
+    const digits = value.replace(/\D/g, "");
+    const tenDigits = digits.length === 11 && digits.startsWith("1") ? digits.slice(1) : digits;
+    return /^[2-9]\d{2}[2-9]\d{6}$/.test(tenDigits);
+  };
+
+  const formatUSPhone = (raw) => {
+    let digits = raw.replace(/\D/g, "");
+    if (digits.startsWith("1")) digits = digits.slice(1);
+    digits = digits.slice(0, 10);
+    if (!digits) return "";
+    let out = "1 (" + digits.slice(0, 3);
+    if (digits.length >= 3) out += ")";
+    if (digits.length > 3) out += " " + digits.slice(3, 6);
+    if (digits.length >= 6) out += "-" + digits.slice(6, 10);
+    return out;
+  };
+
+  document.querySelectorAll('input[name="phone"]').forEach((input) => {
+    input.addEventListener("input", () => {
+      input.value = formatUSPhone(input.value);
+    });
+    input.addEventListener("focus", () => {
+      if (!input.value) input.value = "1 (";
+    });
+    input.addEventListener("blur", () => {
+      if (input.value === "1 (") input.value = "";
+    });
+  });
+
+  const GOOGLE_ADS_CONVERSIONS = [
+    "AW-17461494815/smoXCLqgvtIcEJ-IpYZB",
+    "AW-18361805579/VzMhCOf90tkcEIvWy7NE",
+    "AW-18361826465/vnAECJrL6dkcEKH5zLNE",
+    "AW-18361827179/gBG8CJ2009kcEOv-zLNE",
+    "AW-18361860876/syHnCJfS09kcEIyGz7NE",
+    "AW-18361850933/mVHWCODo09kcELW4zrNE",
+  ];
+
+  const fireGoogleAdsConversions = () => {
+    if (typeof window.gtag !== "function") return;
+    GOOGLE_ADS_CONVERSIONS.forEach((sendTo) => {
+      window.gtag("event", "conversion", { send_to: sendTo });
+    });
+  };
+
   const setMsg = (el, text, type) => {
     if (!el) return;
     el.textContent = text;
@@ -98,7 +144,7 @@
       form.querySelector('[name="name"]')?.classList.add("is-invalid");
       valid = false;
     }
-    if (!data.phone) {
+    if (!data.phone || !isValidUSPhone(data.phone)) {
       form.querySelector('[name="phone"]')?.classList.add("is-invalid");
       valid = false;
     }
@@ -130,6 +176,7 @@
 
       form.reset();
       setMsg(msg, "Thank you! Your request has been sent.", "is-success");
+      fireGoogleAdsConversions();
     } catch (err) {
       console.error(err);
       setMsg(msg, "Something went wrong. Please try again.", "is-error");

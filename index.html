@@ -9,6 +9,20 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@500;600;700;800&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="css/styles.css" />
+
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=AW-17461494815"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'AW-17461494815');
+    gtag('config', 'AW-18361805579');
+    gtag('config', 'AW-18361826465');
+    gtag('config', 'AW-18361827179');
+    gtag('config', 'AW-18361860876');
+    gtag('config', 'AW-18361850933');
+  </script>
 </head>
 <body>
   <div class="bg-waves" aria-hidden="true"></div>
@@ -58,7 +72,7 @@
             <label class="sr-only" for="hero-name">Full Name</label>
             <input id="hero-name" name="name" type="text" placeholder="Your full name" required autocomplete="name" />
             <label class="sr-only" for="hero-phone">Phone Number</label>
-            <input id="hero-phone" name="phone" type="tel" placeholder="Mobile number" required autocomplete="tel" />
+            <input id="hero-phone" name="phone" type="tel" placeholder="1 (___) ___-____" maxlength="16" required autocomplete="tel" inputmode="tel" />
             <label class="sr-only" for="hero-email">Email Address</label>
             <input id="hero-email" name="email" type="email" placeholder="Work or personal email" required autocomplete="email" />
             <p class="form-card__secure">
@@ -348,7 +362,7 @@
             </label>
             <label class="field">
               <span>Phone</span>
-              <input name="phone" type="tel" placeholder="Best number to reach you" required autocomplete="tel" />
+              <input name="phone" type="tel" placeholder="1 (___) ___-____" maxlength="16" required autocomplete="tel" inputmode="tel" />
             </label>
             <label class="field">
               <span>Email</span>
@@ -403,7 +417,7 @@
     </div>
   </footer>
 
-  <script src="js/config.js"></script>
-  <script src="js/main.js"></script>
+  <script src="js/config.js?v=4"></script>
+  <script src="js/main.js?v=4"></script>
 </body>
 </html>

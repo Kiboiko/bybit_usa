@@ -1,0 +1,6 @@
+RewriteEngine On
+RewriteRule ^api/leads$ api/leads.php [L]
+
+<FilesMatch "\.(json|env)$">
+  Require all denied
+</FilesMatch>
