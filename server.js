@@ -5,10 +5,38 @@ const path = require("path");
 const crypto = require("crypto");
 const { URL } = require("url");
 
+function loadEnvFile(filePath) {
+  if (!fs.existsSync(filePath)) return;
+  const lines = fs.readFileSync(filePath, "utf8").split(/\r?\n/);
+  for (const line of lines) {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) continue;
+    const eq = trimmed.indexOf("=");
+    if (eq === -1) continue;
+    const key = trimmed.slice(0, eq).trim();
+    let value = trimmed.slice(eq + 1).trim();
+    if (
+      (value.startsWith('"') && value.endsWith('"')) ||
+      (value.startsWith("'") && value.endsWith("'"))
+    ) {
+      value = value.slice(1, -1);
+    }
+    if (!(key in process.env)) process.env[key] = value;
+  }
+}
+
+loadEnvFile(path.join(__dirname, ".env"));
+
 const PORT = Number(process.env.PORT) || 3000;
 const SPREADSHEET_ID =
-  process.env.SPREADSHEET_ID || "1Ffe6gouuAybSgWC2efpyJskB12EL0XAYGFHWDQhYdfI";
+  process.env.SPREADSHEET_ID || "1aEeUcO5WFwAlSn2Ydm9W5QoIENdLG20qdSA8MJaK5Zw";
 const SHEET_NAME = process.env.SHEET_NAME || "Leads";
+const RESEND_API_KEY = process.env.RESEND_API_KEY || "";
+const LEAD_EMAIL_TO = process.env.LEAD_EMAIL_TO || "xeqiyehov74@gmail.com";
+const LEAD_EMAIL_FROM =
+  process.env.LEAD_EMAIL_FROM || "onboarding@resend.dev";
+const LEAD_EMAIL_REPLY_TO =
+  process.env.LEAD_EMAIL_REPLY_TO || LEAD_EMAIL_TO;
 
 const CREDENTIALS_CANDIDATES = [
   process.env.GOOGLE_CREDENTIALS_PATH,
@@ -168,6 +196,60 @@ async function checkSheetAccess() {
   );
 }
 
+function escapeHtml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;");
+}
+
+async function sendLeadEmail({ name, phone, email, source, page, submittedAt }) {
+  if (!RESEND_API_KEY) {
+    throw new Error("RESEND_API_KEY is missing in .env");
+  }
+
+  const subject = `New lead: ${name}`;
+  const text = [
+    "New lead from Bybit Analytics",
+    "",
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Email: ${email}`,
+    `Source: ${source}`,
+    `Page: ${page}`,
+    `Submitted: ${submittedAt}`,
+  ].join("\n");
+
+  const html = `
+    <div style="font-family:Arial,sans-serif;line-height:1.5;color:#111">
+      <h2 style="margin:0 0 12px">New lead from Bybit Analytics</h2>
+      <p style="margin:0 0 8px"><strong>Name:</strong> ${escapeHtml(name)}</p>
+      <p style="margin:0 0 8px"><strong>Phone:</strong> ${escapeHtml(phone)}</p>
+      <p style="margin:0 0 8px"><strong>Email:</strong> ${escapeHtml(email)}</p>
+      <p style="margin:0 0 8px"><strong>Source:</strong> ${escapeHtml(source)}</p>
+      <p style="margin:0 0 8px"><strong>Page:</strong> ${escapeHtml(page)}</p>
+      <p style="margin:0"><strong>Submitted:</strong> ${escapeHtml(submittedAt)}</p>
+    </div>
+  `;
+
+  return requestJson(
+    "https://api.resend.com/emails",
+    {
+      method: "POST",
+      headers: { Authorization: `Bearer ${RESEND_API_KEY}` },
+    },
+    {
+      from: LEAD_EMAIL_FROM,
+      to: LEAD_EMAIL_TO,
+      reply_to: LEAD_EMAIL_REPLY_TO,
+      subject,
+      text,
+      html,
+    }
+  );
+}
+
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
@@ -211,9 +293,13 @@ function serveStatic(req, res) {
     return;
   }
 
-  // Never expose credentials over HTTP
+  // Never expose secrets over HTTP
   const base = path.basename(filePath).toLowerCase();
-  if (base === "credentials.json" || base.endsWith(".json") && base.includes("usacars")) {
+  if (
+    base === "credentials.json" ||
+    base === ".env" ||
+    (base.endsWith(".json") && base.includes("usacars"))
+  ) {
     sendJson(res, 404, { ok: false, error: "Not found" });
     return;
   }
@@ -244,6 +330,10 @@ const server = http.createServer(async (req, res) => {
         ok: true,
         sheet: SHEET_NAME,
         title: info?.properties?.title || null,
+        emailTo: LEAD_EMAIL_TO,
+        emailFrom: LEAD_EMAIL_FROM,
+        emailReplyTo: LEAD_EMAIL_REPLY_TO,
+        resendConfigured: Boolean(RESEND_API_KEY),
       });
     } catch (err) {
       console.error("[health]", err.message);
@@ -270,7 +360,22 @@ const server = http.createServer(async (req, res) => {
         return;
       }
 
+      const lead = { name, phone, email, source, page, submittedAt };
+
       await appendLead([submittedAt, name, phone, email, source, page]);
+
+      try {
+        await sendLeadEmail(lead);
+      } catch (mailErr) {
+        console.error("[email]", mailErr.message, mailErr.data || "");
+        sendJson(res, 500, {
+          ok: false,
+          error: "Lead saved to Sheets, but email notification failed.",
+          details: mailErr.message,
+        });
+        return;
+      }
+
       sendJson(res, 200, { ok: true });
     } catch (err) {
       console.error("[leads]", err.message, err.data || "");
@@ -294,4 +399,6 @@ server.listen(PORT, () => {
   console.log(`Server running at http://localhost:${PORT}`);
   console.log(`Sheet: ${SPREADSHEET_ID} / ${SHEET_NAME}`);
   console.log(`Service account: ${credentials.client_email}`);
+  console.log(`Lead email: ${LEAD_EMAIL_FROM} → ${LEAD_EMAIL_TO} (reply-to ${LEAD_EMAIL_REPLY_TO})`);
+  console.log(`Resend: ${RESEND_API_KEY ? "configured" : "MISSING"}`);
 });
