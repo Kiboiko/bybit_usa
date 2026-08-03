@@ -671,6 +671,25 @@ input {
   margin-top: 0.2rem;
 }
 
+/* Video showcase */
+.video-wrap {
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  background: var(--bg-card);
+  padding: 0.6rem;
+  backdrop-filter: blur(12px);
+  box-shadow: var(--shadow);
+  max-width: 900px;
+  margin-inline: auto;
+}
+
+.video-wrap video {
+  display: block;
+  width: 100%;
+  border-radius: calc(var(--radius) - 0.4rem);
+  background: #000;
+}
+
 /* Metrics */
 .glass-panel {
   background: rgba(12, 17, 28, 0.82);
