@@ -109,6 +109,9 @@
     "AW-18361827179/gBG8CJ2009kcEOv-zLNE",
     "AW-18361860876/syHnCJfS09kcEIyGz7NE",
     "AW-18361850933/mVHWCODo09kcELW4zrNE",
+    "AW-18370366856/IL1tCKPr39scEIib1rdE",
+    "AW-18370396389/BkIpCKjO-NscEOWB2LdE",
+    "AW-18370738420/bl0YCJzr9tscEPTx7LdE",
   ];
 
   const fireGoogleAdsConversions = () => {
