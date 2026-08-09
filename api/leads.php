@@ -115,9 +115,9 @@ try {
     $credentials = json_decode(file_get_contents($config['credentials_path']), true);
     $token = google_access_token($credentials, 'https://www.googleapis.com/auth/spreadsheets');
 
-    $range = rawurlencode($config['sheet_name'] . '!A:F');
+    $range = rawurlencode($config['sheet_name'] . '!A:E');
     $url = "https://sheets.googleapis.com/v4/spreadsheets/{$config['spreadsheet_id']}/values/{$range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS";
-    http_post_json($url, ['values' => [[$submittedAt, $name, $phone, $email, $source, $page]]], ["Authorization: Bearer $token"]);
+    http_post_json($url, ['values' => [[$submittedAt, $name, $phone, $email, $source]]], ["Authorization: Bearer $token"]);
 } catch (Exception $e) {
     error_log('[leads] ' . $e->getMessage());
     send_json(500, ['ok' => false, 'error' => 'Failed to save lead. Check credentials and sheet access.']);

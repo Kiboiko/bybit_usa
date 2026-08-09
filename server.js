@@ -173,7 +173,7 @@ async function getAccessToken() {
 
 async function appendLead(row) {
   const token = await getAccessToken();
-  const range = encodeURIComponent(`${SHEET_NAME}!A:F`);
+  const range = encodeURIComponent(`${SHEET_NAME}!A:E`);
   const url =
     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}` +
     `/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
@@ -362,7 +362,7 @@ const server = http.createServer(async (req, res) => {
 
       const lead = { name, phone, email, source, page, submittedAt };
 
-      await appendLead([submittedAt, name, phone, email, source, page]);
+      await appendLead([submittedAt, name, phone, email, source]);
 
       try {
         await sendLeadEmail(lead);
