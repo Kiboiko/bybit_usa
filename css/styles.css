@@ -238,7 +238,7 @@ input {
   white-space: nowrap;
 }
 
-.btn:hover {
+.btn:hover:not(:disabled) {
   transform: translateY(-1px);
 }
 
@@ -247,9 +247,11 @@ input {
 }
 
 .btn:disabled {
-  opacity: 0.65;
+  opacity: 0.45;
   cursor: not-allowed;
   transform: none;
+  box-shadow: none;
+  filter: grayscale(0.35);
 }
 
 .btn--gold {

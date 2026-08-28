@@ -173,7 +173,7 @@ async function getAccessToken() {
 
 async function appendLead(row) {
   const token = await getAccessToken();
-  const range = encodeURIComponent(`${SHEET_NAME}!A:E`);
+  const range = encodeURIComponent(`${SHEET_NAME}!A:I`);
   const url =
     `https://sheets.googleapis.com/v4/spreadsheets/${SPREADSHEET_ID}` +
     `/values/${range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS`;
@@ -252,6 +252,15 @@ async function sendLeadEmail({ name, phone, email, source, page, submittedAt }) 
 
 function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+
+// Landing URLs carry the ad's Google Ads tag as ?gtag_id=AW-...; the sheet stores that id, not the URL.
+function extractGtagId(pageUrl) {
+  try {
+    return new URL(pageUrl).searchParams.get("gtag_id") || "";
+  } catch {
+    return "";
+  }
 }
 
 function sendJson(res, status, payload) {
@@ -362,7 +371,8 @@ const server = http.createServer(async (req, res) => {
 
       const lead = { name, phone, email, source, page, submittedAt };
 
-      await appendLead([submittedAt, name, phone, email, source]);
+      // Columns F-H stay empty; the gtag id belongs in column I.
+      await appendLead([submittedAt, name, phone, email, source, "", "", "", extractGtagId(page)]);
 
       try {
         await sendLeadEmail(lead);

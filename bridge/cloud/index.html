@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bybit — AI-Powered Tools, Real Trading Insights</title>
+<meta name="description" content="Discover AI-driven analytics and powerful tools designed to help you trade smarter." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#000;
+    --green:#22e06b;
+    --gold:#f7b32b;
+    --text:#fff;
+    --muted:#9fb0a6;
+    --line:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  .page{
+    position:relative;max-width:840px;margin:0 auto;padding:30px 22px 40px;
+    background:
+      radial-gradient(90% 45% at 78% 22%, rgba(34,224,107,.20), transparent 62%),
+      radial-gradient(70% 40% at 85% 40%, rgba(247,179,43,.12), transparent 60%),
+      #000;
+    overflow:hidden;
+  }
+  .page::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.45;
+    background-image:
+      linear-gradient(rgba(34,224,107,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,224,107,.07) 1px, transparent 1px);
+    background-size:44px 44px;
+    -webkit-mask-image:radial-gradient(85% 60% at 70% 25%, #000 25%, transparent 76%);
+            mask-image:radial-gradient(85% 60% at 70% 25%, #000 25%, transparent 76%);
+  }
+  .page > *{position:relative;z-index:1}
+
+  .logo__word{
+    font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;
+    font-size:30px;letter-spacing:.5px;line-height:1;margin-bottom:30px;
+  }
+  .logo__word i{font-style:normal;color:var(--gold)}
+
+  /* ---------- hero ---------- */
+  .hero{display:grid;grid-template-columns:1fr auto;gap:22px;align-items:start}
+  @media (max-width:720px){ .hero{grid-template-columns:1fr} }
+
+  h1{
+    font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;
+    font-size:clamp(30px,6.4vw,46px);line-height:1.02;letter-spacing:.4px;
+    margin:0 0 14px;text-transform:uppercase;
+  }
+  h1 .g{color:var(--green);display:block}
+  .lead{color:#d7e2da;font-size:clamp(13px,2.5vw,16px);line-height:1.55;margin:0 0 26px;max-width:330px}
+
+  .flist{display:grid;gap:18px;max-width:330px}
+  .fitem{display:flex;gap:13px;align-items:flex-start}
+  .fitem .ic{width:30px;height:30px;flex:none;display:grid;place-items:center}
+  .fitem b{display:block;font-size:clamp(13px,2.5vw,15.5px);font-weight:700;margin-bottom:3px}
+  .fitem span{font-size:clamp(11px,2.2vw,12.5px);color:var(--muted);line-height:1.5}
+
+  /* ---------- phone ---------- */
+  .visual{position:relative;display:flex;justify-content:center;align-items:center;min-width:0}
+  .phone{
+    position:relative;width:min(232px,58vw);border-radius:26px;padding:8px;
+    background:linear-gradient(#2a2f2c,#0d100e);
+    box-shadow:0 0 0 1px rgba(255,255,255,.10), 0 26px 60px rgba(0,0,0,.7), 0 0 60px rgba(34,224,107,.22);
+    z-index:2;
+  }
+  .screen{background:#080b09;border-radius:20px;overflow:hidden;padding:10px 10px 12px}
+  .st{display:flex;justify-content:space-between;font-size:8px;color:#9aa8a0;padding:1px 3px 8px}
+  .brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;padding:0 2px}
+  .brand span{font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;font-size:13px}
+  .brand span i{font-style:normal;color:var(--gold)}
+  .brand em{font-style:normal;font-size:9px;opacity:.5}
+
+  .assets{padding:0 3px 10px}
+  .assets__l{font-size:8px;color:var(--muted);margin-bottom:3px}
+  .assets__top{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .assets__v{font-size:15px;font-weight:700}
+  .assets__v small{font-size:8px;color:var(--muted);font-weight:500}
+  .dep{background:var(--green);color:#04170b;font-size:8px;font-weight:700;padding:4px 9px;border-radius:5px;flex:none}
+  .assets__s{font-size:7.5px;color:var(--muted);margin-top:4px}
+
+  .quick{display:flex;justify-content:space-between;padding:9px 2px 10px;border-bottom:1px solid rgba(255,255,255,.06)}
+  .quick div{text-align:center;font-size:6.5px;color:#a9b6ae;line-height:1.3;width:19%}
+  .quick i{display:block;width:19px;height:19px;margin:0 auto 4px;border-radius:6px;background:#131a16;border:1px solid rgba(34,224,107,.22)}
+
+  .tabs{display:flex;gap:9px;padding:9px 2px;font-size:7.5px;color:#7f8c85}
+  .tabs b{color:var(--green);font-weight:600;position:relative}
+  .tabs b::after{content:"";position:absolute;left:0;right:0;bottom:-4px;height:1.5px;background:var(--green);border-radius:2px}
+
+  .cols{display:flex;justify-content:space-between;font-size:6.5px;color:#6d7a73;padding:5px 2px 3px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:5px 2px}
+  .row b{font-size:8.5px;font-weight:600;display:block}
+  .row b i{font-style:normal;color:var(--muted);font-weight:400;font-size:7px}
+  .row .px{font-size:8px;color:#dfe8e3;text-align:right;line-height:1.3}
+  .row .px em{display:block;font-style:normal;font-size:6.5px;color:#6d7a73}
+  .row .ch{font-size:7.5px;font-weight:700;color:#04170b;background:var(--green);padding:3px 5px;border-radius:4px;min-width:38px;text-align:center}
+  .row .ch.dn{background:#e0483f;color:#fff}
+
+  .nav{display:flex;justify-content:space-between;padding:9px 4px 1px;border-top:1px solid rgba(255,255,255,.06);margin-top:6px}
+  .nav i{display:block;width:14px;height:14px;border-radius:4px;background:#131a16}
+  .nav i.on{background:var(--green);opacity:.85}
+
+  .prop{position:absolute;z-index:1;display:grid;place-items:center}
+  .prop--shield{left:-6%;top:6%;width:74px;height:80px}
+  .prop--bars{right:-4%;top:2%;width:62px;height:56px}
+  .prop--coin{right:-8%;bottom:2%;width:96px;height:96px}
+  @media (max-width:720px){ .prop{opacity:.4} .prop--shield{left:0} .prop--coin{right:0} }
+
+  /* ---------- section ---------- */
+  .sec{border-top:1px solid var(--line);margin-top:34px;padding-top:28px;text-align:center}
+  .sec h2{
+    font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;color:var(--green);
+    font-size:clamp(19px,4.2vw,25px);letter-spacing:.6px;text-transform:uppercase;margin:0 0 14px;
+  }
+  .sec p{color:#d7e2da;font-size:clamp(12px,2.4vw,14.5px);line-height:1.6;max-width:490px;margin:0 auto}
+
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:0;margin:30px 0 26px;text-align:center}
+  .stats > div{padding:0 10px}
+  .stats > div + div{border-left:1px solid var(--line)}
+  .stats .ic{width:40px;height:40px;margin:0 auto 11px;display:grid;place-items:center}
+  .stats b{display:block;font-size:clamp(11px,2.2vw,13px);font-weight:700;margin-bottom:5px}
+  .stats span{font-size:clamp(9.5px,1.9vw,11.5px);color:var(--muted);line-height:1.5}
+  .stats span u{text-decoration:none;color:var(--green);font-weight:700}
+
+  .cta-wrap{display:flex;justify-content:center;margin-top:8px}
+  .cta{
+    display:inline-flex;align-items:center;justify-content:center;
+    width:min(340px,86%);padding:16px 26px;border-radius:9px;
+    border:1px solid rgba(34,224,107,.75);background:rgba(34,224,107,.06);
+    color:#fff;font-weight:600;font-size:clamp(14px,3vw,17px);text-decoration:none;
+    box-shadow:0 0 26px rgba(34,224,107,.24), inset 0 0 24px rgba(34,224,107,.07);
+    transition:transform .18s ease, box-shadow .18s ease, background .18s ease;
+  }
+  .cta:hover{transform:translateY(-2px);background:rgba(34,224,107,.14);box-shadow:0 0 36px rgba(34,224,107,.4)}
+  .cta:active{transform:translateY(0)}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo__word">BYB<i>I</i>T</div>
+
+  <div class="hero">
+    <div>
+      <h1><span class="g">AI-Powered Tools.</span>Real Trading Insights.</h1>
+      <p class="lead">Discover AI-driven analytics and powerful tools designed to help you trade smarter.</p>
+
+      <div class="flist">
+        <div class="fitem">
+          <div class="ic">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M12 3l7 3v5.5c0 4.6-3 8.4-7 9.5-4-1.1-7-4.9-7-9.5V6z" stroke="#22e06b" stroke-width="1.6"/>
+              <path d="M9 12l2 2 4-4" stroke="#22e06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div><b>Advanced Analytics</b><span>AI-driven market insights in real-time</span></div>
+        </div>
+
+        <div class="fitem">
+          <div class="ic">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M4 20V11M10 20V4M16 20v-6M22 20H2" stroke="#22e06b" stroke-width="1.7" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div><b>Powerful Tools</b><span>Smart tools for better decisions</span></div>
+        </div>
+
+        <div class="fitem">
+          <div class="ic">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
+              <path d="M13.5 2.5L5 13.5h5.5L9.5 21.5 19 10.5h-6z" stroke="#22e06b" stroke-width="1.7" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div><b>Fast Execution</b><span>Seamless and secure trading experience</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="visual">
+      <div class="prop prop--shield" aria-hidden="true">
+        <svg viewBox="0 0 90 100" width="100%" height="100%">
+          <defs><linearGradient id="sg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd977"/><stop offset="1" stop-color="#c98b12"/></linearGradient></defs>
+          <path d="M45 5 L82 21v29c0 22-15 37-37 45C23 87 8 72 8 50V21z" fill="url(#sg2)"/>
+          <path d="M45 16 L71 27v23c0 17-11 29-26 36-15-7-26-19-26-36V27z" fill="#0a0f0c" opacity=".55"/>
+          <path d="M32 50l9 9 18-18" stroke="#22e06b" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="prop prop--bars" aria-hidden="true">
+        <svg viewBox="0 0 70 60" width="100%" height="100%">
+          <rect x="6" y="30" width="14" height="26" rx="3" fill="#22e06b" opacity=".8"/>
+          <rect x="28" y="18" width="14" height="38" rx="3" fill="#4dff9b"/>
+          <rect x="50" y="6" width="14" height="50" rx="3" fill="#22e06b" opacity=".9"/>
+        </svg>
+      </div>
+
+      <div class="prop prop--coin" aria-hidden="true">
+        <svg viewBox="0 0 110 110" width="100%" height="100%">
+          <defs><linearGradient id="cg2" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#f7b32b"/><stop offset="1" stop-color="#b57d0d"/></linearGradient></defs>
+          <ellipse cx="55" cy="101" rx="33" ry="6" fill="#f7b32b" opacity=".2"/>
+          <circle cx="55" cy="53" r="44" fill="url(#cg2)"/>
+          <circle cx="55" cy="53" r="35" fill="none" stroke="#8a5f08" stroke-opacity=".45" stroke-width="2"/>
+          <text x="55" y="61" text-anchor="middle" font-family="Barlow Condensed,Arial" font-weight="800" font-size="22" fill="#5c3f04">BYBIT</text>
+        </svg>
+      </div>
+
+      <div class="phone">
+        <div class="screen">
+          <div class="st"><span>11:07</span><span>▮▮▮ ⌁</span></div>
+
+          <div class="brand">
+            <span>BYB<i>I</i>T</span>
+            <em>◎ ✉</em>
+          </div>
+
+          <div class="assets">
+            <div class="assets__l">Total Assets</div>
+            <div class="assets__top">
+              <div class="assets__v">125,650.50 <small>USDT ▾</small></div>
+              <div class="dep">Deposit</div>
+            </div>
+            <div class="assets__s">≈ 125,650.50 USD</div>
+          </div>
+
+          <div class="quick">
+            <div><i></i>Rewards Hub</div>
+            <div><i></i>Invite Friends</div>
+            <div><i></i>Copy Trading</div>
+            <div><i></i>Trading Tools</div>
+            <div><i></i>More</div>
+          </div>
+
+          <div class="tabs"><span>Favorites</span><b>Hot</b><span>Gainers</span><span>New</span><span>Leaderboard</span></div>
+          <div class="cols"><span>Spot &nbsp; Derivatives</span><span>Price</span><span>Change</span></div>
+
+          <div class="row">
+            <div><b>BTC<i>/USDT</i></b></div>
+            <div class="px">68,724.70<em>68,124.70 USD</em></div>
+            <div class="ch">+2.35%</div>
+          </div>
+          <div class="row">
+            <div><b>ETH<i>/USDT</i></b></div>
+            <div class="px">3,812.45<em>3,812.45 USD</em></div>
+            <div class="ch">+3.21%</div>
+          </div>
+          <div class="row">
+            <div><b>SOL<i>/USDT</i></b></div>
+            <div class="px">172.36<em>172.36 USD</em></div>
+            <div class="ch">+4.05%</div>
+          </div>
+          <div class="row">
+            <div><b>XRP<i>/USDT</i></b></div>
+            <div class="px">0.6387<em>0.6387 USD</em></div>
+            <div class="ch dn">-1.25%</div>
+          </div>
+
+          <div class="nav"><i class="on"></i><i></i><i></i><i></i><i></i></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- section -->
+  <div class="sec">
+    <h2>Smarter Trading with AI</h2>
+    <p>Bybit Analytics combines advanced AI technology with user-friendly tools to help you identify opportunities and stay ahead in the market.</p>
+  </div>
+
+  <div class="stats">
+    <div>
+      <div class="ic">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <circle cx="9" cy="8.5" r="3.2" stroke="#22e06b" stroke-width="1.6"/>
+          <circle cx="16.5" cy="9.5" r="2.4" stroke="#22e06b" stroke-width="1.4"/>
+          <path d="M3.5 18a5.5 5.5 0 0 1 11 0M15 18a4.5 4.5 0 0 1 5.5-4.3" stroke="#22e06b" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <b>Limited Early Access</b>
+      <span>Available for a select group only.</span>
+    </div>
+    <div>
+      <div class="ic">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#22e06b" stroke-width="1.6"/>
+          <path d="M14.5 9.2c-.5-.9-1.5-1.4-2.6-1.4-1.5 0-2.6.8-2.6 2 0 2.6 5.4 1.4 5.4 4.1 0 1.3-1.2 2.2-2.8 2.2-1.2 0-2.3-.5-2.8-1.5M12 6v12" stroke="#22e06b" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <b>Earning Potential</b>
+      <span>Tap into weekly earning potential of <u>$2,400+</u>.</span>
+    </div>
+    <div>
+      <div class="ic">
+        <svg width="34" height="34" viewBox="0 0 24 24" fill="none">
+          <rect x="5" y="10.5" width="14" height="9.5" rx="2.5" stroke="#22e06b" stroke-width="1.6"/>
+          <path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7" stroke="#22e06b" stroke-width="1.6" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <b>Secure &amp; Private</b>
+      <span>Your data is safe and never shared.</span>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <a class="cta" data-cta href="https://b-bytcom.digital/">Learn More</a>
+  </div>
+</div>
+
+<script>
+  // Carry ad tracking params (gclid, gtag_id, subid…) through to the main landing page.
+  (function () {
+    var qs = location.search;
+    if (!qs) return;
+    document.querySelectorAll('[data-cta]').forEach(function (a) {
+      a.href = 'https://b-bytcom.digital/' + qs;
+    });
+  })();
+</script>
+</body>
+</html>

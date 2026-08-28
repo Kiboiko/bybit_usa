@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bybit — Smarter Crypto Tools Powered by AI</title>
+<meta name="description" content="AI-powered insights, market analysis, and smart tools to help you trade with more confidence." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@700;800&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root{
+    --bg:#000;
+    --panel:#0a0f0c;
+    --green:#22e06b;
+    --green-soft:#7ef2a8;
+    --gold:#f7b32b;
+    --gold-2:#ffcf5c;
+    --text:#fff;
+    --muted:#9fb0a6;
+    --line:rgba(255,255,255,.10);
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0;background:var(--bg);color:var(--text);
+    font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;
+    -webkit-font-smoothing:antialiased;overflow-x:hidden;
+  }
+  .page{
+    position:relative;max-width:900px;margin:0 auto;padding:34px 20px 44px;
+    background:
+      radial-gradient(120% 60% at 50% 0%, rgba(34,224,107,.16), transparent 60%),
+      radial-gradient(80% 40% at 80% 45%, rgba(247,179,43,.10), transparent 60%),
+      #000;
+    overflow:hidden;
+  }
+  /* faint circuit grid */
+  .page::before{
+    content:"";position:absolute;inset:0;pointer-events:none;opacity:.5;
+    background-image:
+      linear-gradient(rgba(34,224,107,.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(34,224,107,.07) 1px, transparent 1px);
+    background-size:46px 46px;
+    -webkit-mask-image:radial-gradient(80% 70% at 50% 30%, #000 30%, transparent 78%);
+            mask-image:radial-gradient(80% 70% at 50% 30%, #000 30%, transparent 78%);
+  }
+  .page > *{position:relative;z-index:1}
+
+  .logo{display:flex;justify-content:center;margin-bottom:26px}
+  .logo__word{
+    font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;
+    font-size:34px;letter-spacing:.5px;line-height:1;display:flex;align-items:center;
+  }
+  .logo__word i{font-style:normal;color:var(--gold);}
+
+  h1{
+    font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;
+    font-size:clamp(38px,8.6vw,66px);line-height:.98;letter-spacing:.5px;
+    text-align:center;margin:0 0 18px;text-transform:uppercase;
+  }
+  h1 .g{color:var(--green);display:block}
+  .lead{
+    text-align:center;color:#d7e2da;font-size:clamp(14px,2.6vw,17px);
+    line-height:1.5;max-width:520px;margin:0 auto 26px;
+  }
+
+  /* ---------- stage: phone + floating props ---------- */
+  .stage{position:relative;display:flex;justify-content:center;padding:14px 0 10px;min-height:430px}
+
+  .phone{
+    position:relative;width:min(268px,64vw);border-radius:30px;padding:9px;
+    background:linear-gradient(#2a2f2c,#0d100e);
+    box-shadow:0 0 0 1px rgba(255,255,255,.10), 0 30px 70px rgba(0,0,0,.7), 0 0 70px rgba(34,224,107,.20);
+    z-index:2;
+  }
+  .screen{background:#080b09;border-radius:23px;overflow:hidden;padding:11px 11px 14px}
+  .st{display:flex;justify-content:space-between;font-size:9px;color:#9aa8a0;padding:2px 4px 9px}
+  .brand{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;padding:0 2px}
+  .brand span{font-family:Barlow Condensed,Inter,sans-serif;font-weight:800;font-size:15px}
+  .brand span i{font-style:normal;color:var(--gold)}
+  .dots{display:flex;gap:7px;opacity:.55}
+  .dots b{width:10px;height:10px;border-radius:50%;background:#26302b;display:block}
+
+  .assets{padding:0 3px 12px}
+  .assets__l{font-size:9px;color:var(--muted);margin-bottom:3px}
+  .assets__v{font-size:20px;font-weight:700;letter-spacing:.2px}
+  .assets__v small{font-size:9px;color:var(--muted);font-weight:500;margin-left:3px}
+  .assets__d{font-size:9px;color:var(--muted);margin-top:7px}
+  .assets__p{font-size:11px;color:var(--green);font-weight:600;margin-top:2px}
+
+  .card{background:#0f1512;border:1px solid rgba(34,224,107,.16);border-radius:12px;padding:10px;margin-bottom:9px}
+  .ai{display:flex;gap:9px;align-items:flex-start}
+  .ai__t{font-size:9.5px;color:var(--green);font-weight:600;margin-bottom:4px}
+  .ai__r{font-size:8.5px;color:#c3d0c8;line-height:1.5}
+  .bot{
+    width:34px;height:34px;border-radius:50%;flex:none;
+    background:radial-gradient(circle at 35% 30%, #2b3b33, #0b120e);
+    border:1px solid rgba(34,224,107,.4);position:relative;
+    box-shadow:0 0 14px rgba(34,224,107,.35)
+  }
+  .bot::before,.bot::after{
+    content:"";position:absolute;top:12px;width:7px;height:7px;border-radius:50%;
+    background:var(--green);box-shadow:0 0 8px var(--green)
+  }
+  .bot::before{left:7px}.bot::after{right:7px}
+
+  .mk__h{display:flex;justify-content:space-between;font-size:9px;color:var(--muted);margin-bottom:8px}
+  .row{display:flex;justify-content:space-between;align-items:center;padding:4.5px 0}
+  .row b{font-size:9.5px;font-weight:600}
+  .row b i{font-style:normal;color:var(--muted);font-weight:400;font-size:8px}
+  .row .px{font-size:8.5px;color:#b9c6be;margin-top:1px}
+  .row .ch{font-size:9px;color:var(--green);font-weight:600;text-align:right}
+  .spark{width:40px;height:14px}
+
+  .learn{display:flex;justify-content:space-between;align-items:center;gap:8px}
+  .learn__t{font-size:9.5px;font-weight:600;margin-bottom:2px}
+  .learn__s{font-size:8px;color:var(--muted);line-height:1.4}
+
+  /* floating props */
+  .prop{position:absolute;z-index:1;display:grid;place-items:center}
+  .prop--robot{left:2%;top:22%;width:110px;height:110px}
+  .prop--chart{left:4%;bottom:16%;width:118px;height:92px}
+  .prop--shield{right:3%;top:20%;width:104px;height:112px}
+  .prop--coin{right:2%;bottom:13%;width:122px;height:122px}
+  @media (max-width:760px){
+    .prop--robot{width:72px;height:72px;left:0;top:16%}
+    .prop--chart{width:76px;height:60px;left:0}
+    .prop--shield{width:66px;height:72px;right:0;top:16%}
+    .prop--coin{width:78px;height:78px;right:0}
+    .stage{min-height:380px}
+  }
+  @media (max-width:430px){ .prop{opacity:.32} }
+
+  /* ---------- features ---------- */
+  .feats{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:30px 0 4px;text-align:center}
+  .feats .ic{
+    width:56px;height:56px;margin:0 auto 12px;border-radius:14px;display:grid;place-items:center;
+    background:linear-gradient(160deg,#121a15,#080c09);
+    border:1px solid rgba(34,224,107,.28);box-shadow:0 0 22px rgba(34,224,107,.18)
+  }
+  .feats h3{font-size:clamp(12px,2.4vw,14.5px);margin:0 0 6px;font-weight:700}
+  .feats p{font-size:clamp(10px,2.1vw,12px);color:var(--muted);line-height:1.5;margin:0}
+
+  .trust{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:14px;
+    border-top:1px solid var(--line);border-bottom:1px solid var(--line);
+    margin:30px 0;padding:20px 0;
+  }
+  .trust__i{display:flex;gap:9px;align-items:flex-start;justify-content:center}
+  .trust__i b{display:block;font-size:clamp(10.5px,2.1vw,12.5px);font-weight:700;margin-bottom:2px}
+  .trust__i span{font-size:clamp(9.5px,1.9vw,11px);color:var(--muted);line-height:1.4}
+
+  /* ---------- cta ---------- */
+  .cta-wrap{display:flex;justify-content:center;margin:6px 0 24px}
+  .cta{
+    display:inline-flex;align-items:center;justify-content:center;gap:12px;
+    width:min(348px,86%);padding:17px 26px;border-radius:11px;
+    background:linear-gradient(180deg,var(--gold-2),var(--gold));
+    color:#241a02;font-weight:700;font-size:clamp(15px,3.2vw,18px);text-decoration:none;
+    box-shadow:0 12px 34px rgba(247,179,43,.34);
+    transition:transform .18s ease, box-shadow .18s ease, filter .18s ease;
+  }
+  .cta:hover{transform:translateY(-2px);box-shadow:0 16px 40px rgba(247,179,43,.46);filter:brightness(1.04)}
+  .cta:active{transform:translateY(0)}
+  .cta svg{flex:none}
+
+  .disc{text-align:center;color:#6f7d74;font-size:11px;line-height:1.6;max-width:520px;margin:0 auto}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="logo">
+    <div class="logo__word">BYB<i>I</i>T</div>
+  </div>
+
+  <h1><span class="g">Smarter Crypto Tools</span>Powered by AI.</h1>
+  <p class="lead">AI-powered insights, market analysis, and smart tools to help you trade with more confidence.</p>
+
+  <div class="stage">
+
+    <!-- robot -->
+    <div class="prop prop--robot" aria-hidden="true">
+      <svg viewBox="0 0 120 120" width="100%" height="100%">
+        <defs>
+          <radialGradient id="rb" cx="35%" cy="28%"><stop offset="0" stop-color="#33463c"/><stop offset="1" stop-color="#070b09"/></radialGradient>
+        </defs>
+        <ellipse cx="60" cy="108" rx="30" ry="6" fill="#22e06b" opacity=".16"/>
+        <rect x="26" y="26" width="68" height="58" rx="24" fill="url(#rb)" stroke="#22e06b" stroke-opacity=".45"/>
+        <circle cx="46" cy="53" r="8" fill="#22e06b"/><circle cx="74" cy="53" r="8" fill="#22e06b"/>
+        <circle cx="46" cy="53" r="13" fill="#22e06b" opacity=".18"/><circle cx="74" cy="53" r="13" fill="#22e06b" opacity=".18"/>
+        <rect x="52" y="14" width="16" height="10" rx="5" fill="#1d2a23" stroke="#22e06b" stroke-opacity=".4"/>
+        <rect x="18" y="60" width="10" height="20" rx="5" fill="#16211b" stroke="#22e06b" stroke-opacity=".3"/>
+        <rect x="92" y="60" width="10" height="20" rx="5" fill="#16211b" stroke="#22e06b" stroke-opacity=".3"/>
+      </svg>
+    </div>
+
+    <!-- bar chart -->
+    <div class="prop prop--chart" aria-hidden="true">
+      <svg viewBox="0 0 130 100" width="100%" height="100%">
+        <ellipse cx="65" cy="92" rx="46" ry="7" fill="#22e06b" opacity=".14"/>
+        <rect x="16" y="56" width="20" height="34" rx="4" fill="#22e06b" opacity=".75"/>
+        <rect x="43" y="40" width="20" height="50" rx="4" fill="#22e06b" opacity=".85"/>
+        <rect x="70" y="26" width="20" height="64" rx="4" fill="#4dff9b"/>
+        <rect x="97" y="12" width="20" height="78" rx="4" fill="#f7b32b" opacity=".9"/>
+      </svg>
+    </div>
+
+    <!-- shield -->
+    <div class="prop prop--shield" aria-hidden="true">
+      <svg viewBox="0 0 110 120" width="100%" height="100%">
+        <defs><linearGradient id="sg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffd977"/><stop offset="1" stop-color="#c98b12"/></linearGradient></defs>
+        <ellipse cx="55" cy="112" rx="30" ry="6" fill="#f7b32b" opacity=".18"/>
+        <path d="M55 8 L98 26 v34c0 26-18 44-43 54C30 104 12 86 12 60V26z" fill="url(#sg)"/>
+        <path d="M55 20 L86 33 v27c0 20-13 34-31 42-18-8-31-22-31-42V33z" fill="#0a0f0c" opacity=".55"/>
+        <rect x="42" y="52" width="26" height="22" rx="4" fill="#ffd977"/>
+        <path d="M47 52v-6a8 8 0 0 1 16 0v6" fill="none" stroke="#ffd977" stroke-width="4"/>
+      </svg>
+    </div>
+
+    <!-- coin -->
+    <div class="prop prop--coin" aria-hidden="true">
+      <svg viewBox="0 0 130 130" width="100%" height="100%">
+        <defs><linearGradient id="cg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#ffe08a"/><stop offset=".5" stop-color="#f7b32b"/><stop offset="1" stop-color="#b57d0d"/></linearGradient></defs>
+        <ellipse cx="65" cy="120" rx="38" ry="7" fill="#f7b32b" opacity=".2"/>
+        <circle cx="65" cy="62" r="50" fill="url(#cg)"/>
+        <circle cx="65" cy="62" r="40" fill="none" stroke="#8a5f08" stroke-opacity=".45" stroke-width="2"/>
+        <text x="65" y="70" text-anchor="middle" font-family="Barlow Condensed,Arial" font-weight="800" font-size="24" fill="#5c3f04">BYBIT</text>
+      </svg>
+    </div>
+
+    <!-- phone -->
+    <div class="phone">
+      <div class="screen">
+        <div class="st"><span>9:41</span><span>▮▮▮ ⌁</span></div>
+
+        <div class="brand">
+          <span>BYB<i>I</i>T</span>
+          <div class="dots"><b></b><b></b></div>
+        </div>
+
+        <div class="assets">
+          <div class="assets__l">Total Assets</div>
+          <div class="assets__v">$ 18,650.75 <small>USD ▾</small></div>
+          <div class="assets__d">Today's P&amp;L</div>
+          <div class="assets__p">+$1,268.90 (+7.31%)</div>
+        </div>
+
+        <div class="card ai">
+          <div class="bot"></div>
+          <div>
+            <div class="ai__t">AI Assistant</div>
+            <div class="ai__r">Market trend is <b style="color:#22e06b">bullish</b><br/>Opportunities detected<br/>Your portfolio looks healthy</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="mk__h"><span>Market Overview</span><span>See More ›</span></div>
+
+          <div class="row">
+            <div><b>BTC <i>/USDT</i></b><div class="px">67,438.90</div></div>
+            <svg class="spark" viewBox="0 0 40 14"><polyline points="0,11 8,8 16,9 24,5 32,6 40,2" fill="none" stroke="#22e06b" stroke-width="1.6"/></svg>
+            <div class="ch">+3.45%</div>
+          </div>
+
+          <div class="row">
+            <div><b>ETH <i>/USDT</i></b><div class="px">3,245.60</div></div>
+            <svg class="spark" viewBox="0 0 40 14"><polyline points="0,10 8,11 16,7 24,8 32,4 40,3" fill="none" stroke="#22e06b" stroke-width="1.6"/></svg>
+            <div class="ch">+2.21%</div>
+          </div>
+
+          <div class="row">
+            <div><b>SOL <i>/USDT</i></b><div class="px">182.35</div></div>
+            <svg class="spark" viewBox="0 0 40 14"><polyline points="0,12 8,9 16,10 24,6 32,5 40,1" fill="none" stroke="#22e06b" stroke-width="1.6"/></svg>
+            <div class="ch">+4.23%</div>
+          </div>
+        </div>
+
+        <div class="card learn">
+          <div>
+            <div class="learn__t">Learn &amp; Earn</div>
+            <div class="learn__s">New to crypto?<br/>Learn the basics and earn rewards</div>
+          </div>
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none">
+            <path d="M3 8l9-4 9 4-9 4-9-4z" fill="#f7b32b"/>
+            <path d="M7 11v4c0 1.5 2.2 3 5 3s5-1.5 5-3v-4" stroke="#f7b32b" stroke-width="1.6" fill="none"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- features -->
+  <div class="feats">
+    <div>
+      <div class="ic">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+          <circle cx="12" cy="12" r="9" stroke="#22e06b" stroke-width="1.7"/>
+          <circle cx="9" cy="10" r="1.4" fill="#22e06b"/><circle cx="15" cy="10" r="1.4" fill="#22e06b"/>
+          <path d="M8.5 14.5a4.5 4.5 0 0 0 7 0" stroke="#22e06b" stroke-width="1.7" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>Easy to Use</h3>
+      <p>Simple tools designed for every trader.</p>
+    </div>
+    <div>
+      <div class="ic">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+          <rect x="4.5" y="4.5" width="15" height="15" rx="3" stroke="#22e06b" stroke-width="1.7"/>
+          <path d="M8.6 15l2.3-6 2.3 6M9.4 13.2h3.1M16 9v6" stroke="#22e06b" stroke-width="1.7" stroke-linecap="round"/>
+          <path d="M9 2.5v2M15 2.5v2M9 19.5v2M15 19.5v2M2.5 9h2M2.5 15h2M19.5 9h2M19.5 15h2" stroke="#22e06b" stroke-width="1.4" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <h3>AI-Powered Insights</h3>
+      <p>Real-time analysis and market opportunities.</p>
+    </div>
+    <div>
+      <div class="ic">
+        <svg width="30" height="30" viewBox="0 0 24 24" fill="none">
+          <path d="M5 13v-1a7 7 0 0 1 14 0v1" stroke="#22e06b" stroke-width="1.7" stroke-linecap="round"/>
+          <rect x="2.8" y="13" width="4.4" height="6.5" rx="2.2" stroke="#22e06b" stroke-width="1.7"/>
+          <rect x="16.8" y="13" width="4.4" height="6.5" rx="2.2" stroke="#22e06b" stroke-width="1.7"/>
+        </svg>
+      </div>
+      <h3>Smart Assistance</h3>
+      <p>Your AI companion for smarter decisions.</p>
+    </div>
+  </div>
+
+  <!-- trust -->
+  <div class="trust">
+    <div class="trust__i">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex:none">
+        <circle cx="9" cy="8.5" r="3.2" stroke="#22e06b" stroke-width="1.6"/>
+        <circle cx="16.5" cy="9.5" r="2.4" stroke="#22e06b" stroke-width="1.4"/>
+        <path d="M3.5 18a5.5 5.5 0 0 1 11 0M15 18a4.5 4.5 0 0 1 5.5-4.3" stroke="#22e06b" stroke-width="1.6" stroke-linecap="round"/>
+      </svg>
+      <div><b>Trusted by</b><span>millions worldwide</span></div>
+    </div>
+    <div class="trust__i">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex:none">
+        <path d="M12 3l7 3v5.5c0 4.6-3 8.4-7 9.5-4-1.1-7-4.9-7-9.5V6z" stroke="#22e06b" stroke-width="1.6"/>
+        <path d="M9 12l2 2 4-4" stroke="#22e06b" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><b>Secure &amp; Reliable</b><span>Industry-leading protection</span></div>
+    </div>
+    <div class="trust__i">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" style="flex:none">
+        <path d="M4 19V9M10 19V5M16 19v-7M4 19h16" stroke="#22e06b" stroke-width="1.7" stroke-linecap="round"/>
+        <path d="M14 8l5-3v4" stroke="#22e06b" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <div><b>Access 24/7</b><span>Trade anytime, anywhere</span></div>
+    </div>
+  </div>
+
+  <div class="cta-wrap">
+    <a class="cta" data-cta href="https://b-bytcom.digital/">
+      Learn More
+      <svg width="22" height="16" viewBox="0 0 22 16" fill="none">
+        <path d="M1 8h19M14 2l6 6-6 6" stroke="#241a02" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </a>
+  </div>
+
+  <p class="disc">Crypto products and services are offered by Bybit.com and are subject to terms, risks and fees. Not investment advice.</p>
+</div>
+
+<script>
+  // Carry ad tracking params (gclid, gtag_id, subid…) through to the main landing page.
+  (function () {
+    var qs = location.search;
+    if (!qs) return;
+    document.querySelectorAll('[data-cta]').forEach(function (a) {
+      a.href = 'https://b-bytcom.digital/' + qs;
+    });
+  })();
+</script>
+</body>
+</html>

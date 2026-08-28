@@ -20,7 +20,9 @@ if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
     send_json(405, ['ok' => false, 'error' => 'Method not allowed']);
 }
 
-$config = require dirname(dirname(__DIR__)) . '/secrets.php';
+// realpath() resolves the symlinked public_html the parked domains use, so secrets.php
+// is always read from the primary domain's folder no matter which domain served the request.
+$config = require dirname(dirname(realpath(__DIR__))) . '/secrets.php';
 
 function base64url_encode($data) {
     return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
@@ -97,6 +99,14 @@ function escape_html($value) {
     return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
 }
 
+// Landing URLs carry the ad's Google Ads tag as ?gtag_id=AW-...; the sheet stores that id, not the URL.
+function extract_gtag_id($pageUrl) {
+    $query = parse_url($pageUrl, PHP_URL_QUERY);
+    if (!$query) return '';
+    parse_str($query, $params);
+    return isset($params['gtag_id']) ? trim((string) $params['gtag_id']) : '';
+}
+
 $body = json_decode(file_get_contents('php://input'), true);
 if (!is_array($body)) $body = [];
 
@@ -115,9 +125,11 @@ try {
     $credentials = json_decode(file_get_contents($config['credentials_path']), true);
     $token = google_access_token($credentials, 'https://www.googleapis.com/auth/spreadsheets');
 
-    $range = rawurlencode($config['sheet_name'] . '!A:E');
+    $range = rawurlencode($config['sheet_name'] . '!A:I');
     $url = "https://sheets.googleapis.com/v4/spreadsheets/{$config['spreadsheet_id']}/values/{$range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS";
-    http_post_json($url, ['values' => [[$submittedAt, $name, $phone, $email, $source]]], ["Authorization: Bearer $token"]);
+    // Columns F-H stay empty; the gtag id belongs in column I.
+    $row = [$submittedAt, $name, $phone, $email, $source, '', '', '', extract_gtag_id($page)];
+    http_post_json($url, ['values' => [$row]], ["Authorization: Bearer $token"]);
 } catch (Exception $e) {
     error_log('[leads] ' . $e->getMessage());
     send_json(500, ['ok' => false, 'error' => 'Failed to save lead. Check credentials and sheet access.']);
