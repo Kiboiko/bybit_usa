@@ -95,10 +95,6 @@ function is_valid_us_phone($value) {
     return (bool) preg_match('/^[2-9]\d{2}[2-9]\d{6}$/', $digits);
 }
 
-function escape_html($value) {
-    return htmlspecialchars($value, ENT_QUOTES, 'UTF-8');
-}
-
 // Landing URLs carry the ad's Google Ads tag as ?gtag_id=AW-...; the sheet stores that id, not the URL.
 function extract_gtag_id($pageUrl) {
     $query = parse_url($pageUrl, PHP_URL_QUERY);
@@ -125,7 +121,10 @@ try {
     $credentials = json_decode(file_get_contents($config['credentials_path']), true);
     $token = google_access_token($credentials, 'https://www.googleapis.com/auth/spreadsheets');
 
-    $range = rawurlencode($config['sheet_name'] . '!A:I');
+    // Append against column A only. Sheets locates the "table" inside the given range and
+    // writes from its first column outwards; a range like A:I would be split into two tables
+    // by the empty F-H gap and land the row in column I instead.
+    $range = rawurlencode($config['sheet_name'] . '!A:A');
     $url = "https://sheets.googleapis.com/v4/spreadsheets/{$config['spreadsheet_id']}/values/{$range}:append?valueInputOption=USER_ENTERED&insertDataOption=INSERT_ROWS";
     // Columns F-H stay empty; the gtag id belongs in column I.
     $row = [$submittedAt, $name, $phone, $email, $source, '', '', '', extract_gtag_id($page)];
@@ -133,36 +132,6 @@ try {
 } catch (Exception $e) {
     error_log('[leads] ' . $e->getMessage());
     send_json(500, ['ok' => false, 'error' => 'Failed to save lead. Check credentials and sheet access.']);
-}
-
-try {
-    if (!$config['resend_api_key']) {
-        throw new Exception('RESEND_API_KEY is missing');
-    }
-    $subject = "New lead: $name";
-    $text = "New lead from Bybit Analytics\n\n" .
-        "Name: $name\nPhone: $phone\nEmail: $email\nSource: $source\nPage: $page\nSubmitted: $submittedAt";
-    $html = '<div style="font-family:Arial,sans-serif;line-height:1.5;color:#111">' .
-        '<h2 style="margin:0 0 12px">New lead from Bybit Analytics</h2>' .
-        '<p style="margin:0 0 8px"><strong>Name:</strong> ' . escape_html($name) . '</p>' .
-        '<p style="margin:0 0 8px"><strong>Phone:</strong> ' . escape_html($phone) . '</p>' .
-        '<p style="margin:0 0 8px"><strong>Email:</strong> ' . escape_html($email) . '</p>' .
-        '<p style="margin:0 0 8px"><strong>Source:</strong> ' . escape_html($source) . '</p>' .
-        '<p style="margin:0 0 8px"><strong>Page:</strong> ' . escape_html($page) . '</p>' .
-        '<p style="margin:0"><strong>Submitted:</strong> ' . escape_html($submittedAt) . '</p>' .
-        '</div>';
-
-    http_post_json('https://api.resend.com/emails', [
-        'from' => $config['lead_email_from'],
-        'to' => $config['lead_email_to'],
-        'reply_to' => $config['lead_email_reply_to'],
-        'subject' => $subject,
-        'text' => $text,
-        'html' => $html,
-    ], ["Authorization: Bearer {$config['resend_api_key']}"]);
-} catch (Exception $e) {
-    error_log('[email] ' . $e->getMessage());
-    send_json(500, ['ok' => false, 'error' => 'Lead saved to Sheets, but email notification failed.', 'details' => $e->getMessage()]);
 }
 
 send_json(200, ['ok' => true]);

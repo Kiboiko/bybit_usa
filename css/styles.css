@@ -456,6 +456,7 @@ input {
 
 .form-msg.is-success { color: var(--green); }
 .form-msg.is-error { color: #f87171; }
+.form-msg.is-hint { color: var(--muted); }
 
 /* Phone strip */
 .phone-strip {
