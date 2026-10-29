@@ -292,7 +292,7 @@ function readBody(req) {
 
 function serveStatic(req, res) {
   let pathname = decodeURIComponent(new URL(req.url, "http://localhost").pathname);
-  if (pathname === "/") pathname = "/index.html";
+  if (pathname === "/") pathname = "/indexblack.html";
 
   const safePath = path.normalize(pathname).replace(/^(\.\.[/\\])+/, "");
   const filePath = path.join(__dirname, safePath);
